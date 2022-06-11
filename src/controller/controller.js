@@ -15,12 +15,9 @@ const deleteComrade=(req, res)=>{
 
 const insertComrade=(req, res)=>{
     const {firstName, lastName, gender, occupation, mobile, email, 
-    state, lga } = req.body;
+    state, lga, age, subscribe } = req.body;
 
-    console.log(firstName, lastName, gender, occupation, mobile, email, 
-    state, lga )
-
-    const newComrade = new Comrade({firstName, lastName, gender, occupation, mobile, email, 
+    const newComrade = new Comrade({firstName, lastName, gender, occupation, mobile, email, age, subscribe,
         state, lga});
     newComrade.save().then((result)=>{
         console.log("saved comrade successfully");

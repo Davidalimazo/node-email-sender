@@ -19,6 +19,10 @@ const ComradeSchema = new mongoose.Schema({
     maxlength:8,
     required: true,
   },
+  age: {
+    type: Number,
+    required: true,
+  },
   occupation: {
     type: String,
     minlength:3,
@@ -47,6 +51,10 @@ const ComradeSchema = new mongoose.Schema({
     type: String,
     minlength:3,
     maxlength:20,
+    required: true,
+  },
+  subscribe: {
+    type: Boolean,
     required: true,
   },
 }, { timestamps: true });
