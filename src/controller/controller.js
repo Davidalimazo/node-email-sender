@@ -1,15 +1,6 @@
 const Comrade = require("../model/comrade.model");
 const nodemailer = require('nodemailer');
 
-// const transporter = nodemailer.createTransport({
-//     host: process.env.SMTP_HOST,
-//     secure:465,
-//     auth:{
-//         user:'aydmediasolution@gmail.com',
-//         pass:'omega42k@'
-//     },
-// })
-
 const transporter = nodemailer.createTransport({
     service: "Gmail",
     port: 465,
@@ -44,7 +35,7 @@ const insertComrade = (req, res) => {
         from: 'davidalimazo@gmail.com',
         to: `${email}`,
         subject: 'Welcome on board Comrade',
-        text: `Welcome ${firstName + " " + lastName} to ComradeNg, we are glad to have you with us, lets join hand and make Nigeria again.`
+        text: `Welcome ${firstName + " " + lastName} to ComradeNg, we are glad to have you with us lets join hands and make Nigeria again. please follow us on our social media pages`
     }
 
     const newComrade = new Comrade({
