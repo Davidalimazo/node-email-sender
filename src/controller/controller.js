@@ -1,66 +1,77 @@
 const Comrade = require("../model/comrade.model");
 const nodemailer = require('nodemailer');
 
+// const transporter = nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     secure:465,
+//     auth:{
+//         user:'aydmediasolution@gmail.com',
+//         pass:'omega42k@'
+//     },
+// })
+
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    secure:465,
-    auth:{
-        user:'aydmediasolution@gmail.com',
-        pass:'omega42k@'
+    service: "Gmail",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    logger: true,
+    debug: true,
+    secureConnection: false,
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
     },
+    tls: {
+        rejectUnAuthorized: true
+    }
 })
 
-
-let comradeName, comradeEmail;
-
-const options={
-    from:'davidalimazo@outlook.com',
-    to:`${comradeEmail}`,
-    subject:'Welcome on board Comrade',
-    text:`Welcome ${comradeName} to ComradeNg, we are glad to have you with us, lets join hand and make Nigeria again.`
+const getComrades = (req, res) => {
+    Comrade.find().then(result => res.send(result)).catch(err => console.log(err.message));
 }
 
+const deleteComrade = (req, res) => {
+    const { firstName, lastName } = req.body;
 
-const getComrades=(req, res)=>{
-     Comrade.find().then(result=>res.send(result)).catch(err=>console.log(err.message));
+    Comrade.findOneAndDelete({ firstName, lastName }).then(result => res.send(result)).catch(err => console.log(err.message));
 }
 
-const deleteComrade=(req, res)=>{
-    const {firstName, lastName} = req.body;
+const insertComrade = (req, res) => {
+    const { firstName, lastName, gender, occupation, mobile, email,
+        state, lga, age, subscribe } = req.body;
 
-    Comrade.findOneAndDelete({firstName, lastName}).then(result=>res.send(result)).catch(err=>console.log(err.message));
-}
+    const options = {
+        from: 'davidalimazo@gmail.com',
+        to: `${email}`,
+        subject: 'Welcome on board Comrade',
+        text: `Welcome ${firstName + " " + lastName} to ComradeNg, we are glad to have you with us, lets join hand and make Nigeria again.`
+    }
 
-const insertComrade=(req, res)=>{
-    const {firstName, lastName, gender, occupation, mobile, email, 
-    state, lga, age, subscribe } = req.body;
+    const newComrade = new Comrade({
+        firstName, lastName, gender, occupation, mobile, email, age, subscribe,
+        state, lga
+    });
 
-    comradeName = firstName + " " + lastName;
-    comradeEmail = email;
-
-    const newComrade = new Comrade({firstName, lastName, gender, occupation, mobile, email, age, subscribe,
-        state, lga});
-        
-    newComrade.save().then((result)=>{
+    newComrade.save().then((result) => {
         console.log("saved comrade successfully");
 
-        if(subscribe){
-            transporter.sendMail(options, (err, info)=>{
-                if(err){
-                    console.log("Error sending email: "+err.message);
+        if (subscribe) {
+            transporter.sendMail(options, (err, info) => {
+                if (err) {
+                    console.log("Error sending email: " + err.message);
                     return
                 }
-                console.log("Mail sent successfully "+ info)
+                console.log("Mail sent successfully " + info)
             })
         }
 
-        res.status(200).json({result})
-    }).catch(err=>console.log(err.message));
+        res.status(200).json({ result })
+    }).catch(err => console.log(err.message));
 
 
-        
+
 }
 
-module.exports={
+module.exports = {
     getComrades, insertComrade, deleteComrade
 }
