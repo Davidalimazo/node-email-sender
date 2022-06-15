@@ -1,5 +1,7 @@
 const Comrade = require("../model/comrade.model");
 const nodemailer = require('nodemailer');
+const hbs = require('nodemailer-express-handlebars');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",
@@ -16,6 +18,18 @@ const transporter = nodemailer.createTransport({
         rejectUnAuthorized: true
     }
 })
+
+const handlebarOptions = {
+    viewEngine:{
+        extname:'.handlebars',
+        partialsDir:path.resolve(__dirname,'../views'),
+        defaultLayout:false
+    },
+    viewPath:path.resolve(__dirname,'../views'),
+    extname:'.handlebars'
+}
+
+transporter.use('compile', hbs(handlebarOptions))
 
 const getComrades = (req, res) => {
     Comrade.find().then(result => res.send(result)).catch(err => console.log(err.message));
@@ -35,7 +49,19 @@ const insertComrade = (req, res) => {
         from: 'davidalimazo@gmail.com',
         to: `${email}`,
         subject: 'Welcome on board Comrade',
-        text: `Welcome ${firstName + " " + lastName} to ComradeNg, we are glad to have you with us lets join hands and make Nigeria again. please follow us on our social media pages`
+        template:'email',
+        attachments: [{
+            filename: 'logo_1.png',
+            path: path.join(__dirname, '../../', 'public/images/logo_1.png'),
+            cid: 'logo'
+        }],
+        context:{
+            title:`Welcome ${firstName + " " + lastName} to ComradeNg`,
+            firstName:firstName,
+            lastName:lastName,
+            message:`We are glad to have you with us lets join hands and make Nigeria great again. please follow us on our social media pages`
+        },
+        
     }
 
     const newComrade = new Comrade({
@@ -52,7 +78,7 @@ const insertComrade = (req, res) => {
                     console.log("Error sending email: " + err.message);
                     return
                 }
-                console.log("Mail sent successfully " + info)
+                console.log("Mail sent successfully " + info.response)
             })
         }
 

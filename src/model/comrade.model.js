@@ -26,7 +26,7 @@ const ComradeSchema = new mongoose.Schema({
   occupation: {
     type: String,
     minlength:3,
-    maxlength:20,
+    maxlength:30,
     required: true,
   },
   mobile: {

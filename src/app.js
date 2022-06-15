@@ -3,21 +3,22 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const express = require('express');
 const router  = require('./route/route');
-var morgan = require('morgan')
+var morgan = require('morgan');
+const path = require('path');
 const app = express();
 
 app.use(morgan('combined', {
   skip: function (req, res) { return res.statusCode < 400 }
 }))
 app.use(express.json());
-app.use(express.static('public'))
+app.set('views', path.join(__dirname,'./views'))
+app.use(express.static(path.join(__dirname,'../public')))
 app.use(express.urlencoded({extended:true}))
 const url = process.env.DB;
 mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-
 
  
   app.use(morgan('combined'))

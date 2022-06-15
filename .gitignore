@@ -10,11 +10,8 @@ node_modules
 # Ignore files related to API keys
 .env
 
-# Ignore gitignore files 
-.gitignore
-
 # Ignore procfile files 
-procfile
+Procfile
 
 # Ignore SASS config files
 .sass-cache
