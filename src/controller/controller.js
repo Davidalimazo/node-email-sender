@@ -31,19 +31,18 @@ const handlebarOptions = {
 
 transporter.use('compile', hbs(handlebarOptions))
 
-const getComrades = (req, res) => {
-    Comrade.find().then(result => res.send(result)).catch(err => console.log(err.message));
+const getComrades = async(req, res) => {
+   await Comrade.find().then(result => res.send(result)).catch(err => console.log(err.message));
 }
 
-const deleteComrade = (req, res) => {
+const deleteComrade = async(req, res) => {
     const { firstName, lastName } = req.body;
 
-    Comrade.findOneAndDelete({ firstName, lastName }).then(result => res.send(result)).catch(err => console.log(err.message));
+   await Comrade.findOneAndDelete({ firstName, lastName }).then(result => res.send(result)).catch(err => console.log(err.message));
 }
 
-const insertComrade = (req, res) => {
-    const { firstName, lastName, gender, occupation, mobile, email,
-        state, lga, age, subscribe } = req.body;
+const insertComrade = async(req, res) => {
+    const { firstName = firstName.toLowerCase(),  lastName=lastName.toLowerCase(), gender=gender.toLowerCase(), occupation=occupation.toLowerCase(), email=email.toLowerCase(), state=state.toLowerCase(),  lga=lga.toLowerCase(), age, mobile, subscribe } = req.body;
 
     const options = {
         from: 'davidalimazo@gmail.com',
@@ -64,12 +63,15 @@ const insertComrade = (req, res) => {
         
     }
 
+   let getComradeInfo = await Comrade.findOne({firstName, lastName, email});
+
+   if(getComradeInfo == null){
     const newComrade = new Comrade({
         firstName, lastName, gender, occupation, mobile, email, age, subscribe,
         state, lga
     });
 
-    newComrade.save().then((result) => {
+   await newComrade.save().then((result) => {
         console.log("saved comrade successfully");
 
         if (subscribe) {
@@ -84,8 +86,10 @@ const insertComrade = (req, res) => {
 
         res.status(200).json({ result })
     }).catch(err => console.log(err.message));
-
-
+   }
+    else{
+     res.status(403).json({ message: 'Already registered' });
+}
 
 }
 
